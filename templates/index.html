@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InfoSec Cipher Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+  <div class="bg-orb orb-three"></div>
+
+  <main class="app-shell">
+    <section class="hero" aria-labelledby="main-title">
+      <div class="hero-copy">
+        <span class="eyebrow">Information Security Project</span>
+        <h1 id="main-title">Cipher Lab <span>AI Math Tutor</span></h1>
+        <p>
+          Enter text, select a cipher, choose an action, and get the output with clear mathematical steps.
+          Built with HCI principles: simple flow, visible feedback, validation, and readable results.
+        </p>
+        <div class="hero-badges" aria-label="Project highlights">
+          <span>No API Key</span>
+          <span>Python Backend</span>
+          <span>Dark Gen-Z UI</span>
+          <span>Math Solution</span>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="System status">
+        <div class="pulse-dot"></div>
+        <p>Local Mode</p>
+        <strong>Offline explanation engine ready</strong>
+        <small>Optional local Ollama LLM supported</small>
+      </div>
+    </section>
+
+    <section class="grid-layout">
+      <form id="cipherForm" class="panel input-panel" autocomplete="off">
+        <div class="panel-header">
+          <div>
+            <p class="section-kicker">Step 01</p>
+            <h2>Choose Method</h2>
+          </div>
+          <span class="status-pill" id="modePill">Encrypt Mode</span>
+        </div>
+
+        <div class="field-group">
+          <label for="cipher">Cipher / Algorithm</label>
+          <select id="cipher" name="cipher" aria-describedby="cipherHelp">
+            <option value="caesar">Caesar Cipher</option>
+            <option value="rsa">RSA</option>
+            <option value="dsa">DSA Signature</option>
+            <option value="asa">ASA / AES Cipher</option>
+            <option value="substitution">Substitution Cipher</option>
+            <option value="affine">Affine Cipher</option>
+            <option value="vigenere">Vigenere Cipher</option>
+          </select>
+          <small id="cipherHelp">DSA uses Sign/Verify. Other algorithms use Encrypt/Decrypt.</small>
+        </div>
+
+        <div class="field-group">
+          <label for="action">Action</label>
+          <select id="action" name="action"></select>
+        </div>
+
+        <div class="field-group">
+          <label for="text">Input Text / Ciphertext</label>
+          <textarea id="text" name="text" rows="7" placeholder="Example: HELLO INFORMATION SECURITY" required></textarea>
+          <small id="textHint">For RSA decryption, paste encrypted numbers separated by spaces.</small>
+        </div>
+
+        <div class="panel mini-panel">
+          <div class="panel-header compact">
+            <div>
+              <p class="section-kicker">Step 02</p>
+              <h3>Keys & Parameters</h3>
+            </div>
+            <button class="ghost-btn" type="button" id="resetKeys">Reset</button>
+          </div>
+          <div id="keyFields" class="key-grid"></div>
+        </div>
+
+        <div class="action-row">
+          <button type="submit" class="primary-btn" id="runBtn">Run Cipher</button>
+          <button type="button" class="secondary-btn" id="fillDemo">Fill Demo</button>
+        </div>
+
+        <div class="hci-note" role="note">
+          <strong>HCI rule followed:</strong> The form prevents common errors by showing only relevant keys for the selected cipher.
+        </div>
+      </form>
+
+      <section class="panel output-panel" aria-live="polite">
+        <div class="panel-header">
+          <div>
+            <p class="section-kicker">Step 03</p>
+            <h2>Output Result</h2>
+          </div>
+          <button type="button" class="ghost-btn" id="copyResult">Copy</button>
+        </div>
+
+        <div id="alertBox" class="alert hidden"></div>
+
+        <div class="result-box">
+          <label for="resultOutput">Final Answer</label>
+          <textarea id="resultOutput" rows="6" readonly placeholder="Your result will appear here..."></textarea>
+        </div>
+
+        <div class="explain-card">
+          <div class="explain-title">
+            <span>🤖</span>
+            <h3>AI Tutor Explanation</h3>
+          </div>
+          <p id="aiExplanation">Run any cipher to get a short student-friendly explanation.</p>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Result details">
+          <button class="tab active" type="button" data-tab="steps">Math Steps</button>
+          <button class="tab" type="button" data-tab="table">Working Table</button>
+          <button class="tab" type="button" data-tab="meta">Keys Used</button>
+        </div>
+
+        <div id="stepsPanel" class="tab-panel active">
+          <ol id="stepsList" class="steps-list"></ol>
+        </div>
+        <div id="tablePanel" class="tab-panel">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Input</th>
+                  <th>Before</th>
+                  <th>Formula</th>
+                  <th>After</th>
+                  <th>Output</th>
+                </tr>
+              </thead>
+              <tbody id="workingTable"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="metaPanel" class="tab-panel">
+          <pre id="metaOutput">{}</pre>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel info-section">
+      <div>
+        <p class="section-kicker">Viva Help</p>
+        <h2>What this project shows</h2>
+      </div>
+      <div class="info-grid">
+        <article>
+          <h3>Input</h3>
+          <p>User gives plain text or ciphertext. The app validates input and parameters.</p>
+        </article>
+        <article>
+          <h3>Process</h3>
+          <p>Backend applies cipher formulas and records every mathematical step.</p>
+        </article>
+        <article>
+          <h3>Output</h3>
+          <p>Result, formula table, keys, and AI-style explanation are displayed clearly.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
